@@ -46,6 +46,7 @@ public class StreamController {
                 .delayElements(Duration.ofMillis(100));
     }
 
+    //SSE(Server Sent Event)
     //"text/event-stream;charset=UTF-8"
     @GetMapping(value = "/api/stream/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> streamSSE(@RequestParam(

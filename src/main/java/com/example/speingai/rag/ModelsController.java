@@ -25,32 +25,32 @@ public class ModelsController {
             value = "message",
             defaultValue = "Give me a list of all the models from OpenAI along with their context window.") String message) {
 
-//        return chatClient.prompt()
-//                .user(message)
-//                .call()
-//                .entity(Models.class);
-        String enhancedPrompt = message +
-                "\n\nPlease respond with a valid JSON object in this exact format:\n" +
-                "{\n" +
-                "  \"models\": [\n" +
-                "    {\n" +
-                "      \"company\": \"company_name\",\n" +
-                "      \"model\": \"model_name\",\n" +
-                "      \"context_window_size\": number\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}\n" +
-                "Only return valid JSON, no additional text.";
-
-        try {
-            return chatClient.prompt()
-                    .user(enhancedPrompt)
-                    .call()
-                    .entity(Models.class);
-        } catch (Exception e) {
-            // 파싱 실패 시 빈 결과 반환
-            return new Models(List.of());
-        }
+        return chatClient.prompt()
+                .user(message)
+                .call()
+                .entity(Models.class);
+//        String enhancedPrompt = message +
+//                "\n\nPlease respond with a valid JSON object in this exact format:\n" +
+//                "{\n" +
+//                "  \"models\": [\n" +
+//                "    {\n" +
+//                "      \"company\": \"company_name\",\n" +
+//                "      \"model\": \"model_name\",\n" +
+//                "      \"context_window_size\": number\n" +
+//                "    }\n" +
+//                "  ]\n" +
+//                "}\n" +
+//                "Only return valid JSON, no additional text.";
+//
+//        try {
+//            return chatClient.prompt()
+//                    .user(enhancedPrompt)
+//                    .call()
+//                    .entity(Models.class);
+//        } catch (Exception e) {
+//            // 파싱 실패 시 빈 결과 반환
+//            return new Models(List.of());
+//        }
     }
 
 
@@ -58,7 +58,7 @@ public class ModelsController {
     @GetMapping("/api/rag/models/raw")
     public String getRawResponse(@RequestParam(
             value = "message",
-            defaultValue = "List all OpenAI models") String message) {
+            defaultValue = "Give me a list of all the models from OpenAI along with their context window.") String message) {
 
         return chatClient.prompt()
                 .user(message)

@@ -44,7 +44,8 @@ public class OllamaConfig {
                 .build();
 
         OllamaOptions options = OllamaOptions.builder()
-                .model("qwen2.5:1.5b")
+                //.model("qwen2.5:1.5b")
+                .model("bge-m3:latest")
                 .build();
 
         //return new OllamaEmbeddingModel(ollamaApi, options);

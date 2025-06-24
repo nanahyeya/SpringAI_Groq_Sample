@@ -37,7 +37,8 @@ public class ChatController {
 
         var response = chatClient
                 .prompt()
-                .user(u -> u.text("{topic}이란 무엇인지 말해 주세요.").param("topic", topic))
+                .user(u -> u.text("{topic}이란 무엇인지 말해 주세요.")
+                        .param("topic", topic))
                 .call()
                 .content();
         return Map.of("answer", response);

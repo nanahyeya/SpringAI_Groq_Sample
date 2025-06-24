@@ -46,15 +46,19 @@ public class RagConfiguration {
             log.info("Vector Store File Exists,");
             simpleVectorStore.load(vectorStoreFile);
         } else {
-            log.info("Vector Store File Does Not Exist, loading documents");
+            log.info("===> Vector Store File Does Not Exist, loading documents");
             TextReader textReader = new TextReader(models);
             textReader.getCustomMetadata().put("filename", "models.txt");
             List<Document> documents = textReader.get();
+            log.info("===> 스플릿팅 전 Document 갯수 = {} ", documents.size());
 
             TextSplitter textSplitter = new TokenTextSplitter();
             List<Document> splitDocuments = textSplitter.apply(documents);
+            log.info("===> 스플릿팅 후 Document 갯수 = {} ", splitDocuments.size());
+
             simpleVectorStore.add(splitDocuments);
             simpleVectorStore.save(vectorStoreFile);
+            log.info("===> Vector Store 저장완료 ");
         }
         return simpleVectorStore;
     }
