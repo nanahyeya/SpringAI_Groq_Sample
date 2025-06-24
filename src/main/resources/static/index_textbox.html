@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Travel Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        #messageInput {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        #messageInput:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+
+        #output {
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.6;
+            border-radius: 5px;
+        }
+
+        .controls {
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #startBtn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #startBtn:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        #startBtn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        #stopBtn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #stopBtn:hover:not(:disabled) {
+            background-color: #c82333;
+        }
+
+        #stopBtn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        #clearBtn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        #clearBtn:hover {
+            background-color: #545b62;
+        }
+
+        .status {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .status.connected {
+            color: #28a745;
+        }
+
+        .status.disconnected {
+            color: #dc3545;
+        }
+
+        .status.connecting {
+            color: #ffc107;
+        }
+
+        .example-messages {
+            margin-top: 10px;
+        }
+
+        .example-btn {
+            background-color: #17a2b8;
+            color: white;
+            padding: 5px 10px;
+            margin: 2px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        .example-btn:hover {
+            background-color: #138496;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<h1>🤖 AI Travel Guide</h1>
+
+<div class="input-section">
+    <label for="messageInput">Enter your travel question:</label>
+    <textarea
+            id="messageInput"
+            placeholder="예: I'm visiting Korea next month, what are 10 places I must visit?"
+    ></textarea>
+
+    <div class="example-messages">
+        <span style="font-size: 12px; color: #666;">Quick examples:</span><br>
+        <button class="example-btn" onclick="setExampleMessage('korea')">Korea Travel</button>
+        <button class="example-btn" onclick="setExampleMessage('japan')">Japan Travel</button>
+        <button class="example-btn" onclick="setExampleMessage('food')">Korean Food</button>
+        <button class="example-btn" onclick="setExampleMessage('budget')">Budget Travel</button>
+        <button class="example-btn" onclick="setExampleMessage('culture')">Cultural Sites</button>
+    </div>
+
+    <div class="controls">
+        <button id="startBtn" onclick="startStream()">🚀 Start Stream</button>
+        <button id="stopBtn" onclick="stopStream()" disabled>⏹️ Stop Stream</button>
+        <button id="clearBtn" onclick="clearOutput()">🗑️ Clear</button>
+        <span id="status" class="status disconnected">Disconnected</span>
+    </div>
+</div>
+
+<pre id="output"></pre>
+
+<script>
+    let eventSource = null;
+    let accumulatedText = '';
+    const output = document.getElementById('output');
+    const messageInput = document.getElementById('messageInput');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const status = document.getElementById('status');
+
+    // 기본 메시지 설정
+    messageInput.value = "I'm visiting Korea next month, what are 10 places I must visit?";
+
+    function startStream() {
+        const message = messageInput.value.trim();
+
+        if (!message) {
+            alert('Please enter a message first!');
+            messageInput.focus();
+            return;
+        }
+
+        if (eventSource) {
+            eventSource.close();
+        }
+
+        accumulatedText = '';
+        output.textContent = 'Starting stream...\n\n';
+
+        // 버튼 상태 변경
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        messageInput.disabled = true;
+        updateStatus('connecting', 'Connecting...');
+
+        // URL 인코딩된 메시지로 EventSource 생성
+        const encodedMessage = encodeURIComponent(message);
+        eventSource = new EventSource(`/api/stream/sse?message=${encodedMessage}`);
+
+        eventSource.onopen = (event) => {
+            updateStatus('connected', 'Connected');
+            output.textContent = ''; // "Starting stream..." 메시지 제거
+        };
+
+        eventSource.onmessage = (event) => {
+            accumulatedText += event.data;
+
+            // 숫자 목록 앞에 줄바꿈 추가
+            let formattedText = accumulatedText
+                .replace(/(\d+\.\s*\*\*)/g, '\n\n$1')  // 번호 앞에 줄바꿈
+                .replace(/([.!?])\s+(?=\d+\.)/g, '$1\n\n');  // 문장 끝과 다음 번호 사이 줄바꿈
+
+            output.textContent = formattedText;
+            output.scrollTop = output.scrollHeight;
+        };
+
+        eventSource.onerror = (event) => {
+            console.error('EventSource failed:', event);
+            stopStream();
+            output.textContent += '\n\n❌ Connection error occurred. Please try again.';
+        };
+    }
+
+    function stopStream() {
+        if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+        }
+
+        // 버튼 상태 변경
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        messageInput.disabled = false;
+        updateStatus('disconnected', 'Disconnected');
+
+        if (accumulatedText.trim()) {
+            output.textContent += '\n\n⏹️ Stream stopped.';
+        }
+    }
+
+    function clearOutput() {
+        accumulatedText = '';
+        output.textContent = '';
+    }
+
+    function updateStatus(className, text) {
+        status.className = `status ${className}`;
+        status.textContent = text;
+    }
+
+    // 예시 메시지 설정 함수
+    function setExampleMessage(type) {
+        const examples = {
+            'korea': "I'm visiting Korea next month, what are 10 places I must visit?",
+            'japan': "I'm planning a 2-week trip to Japan. What are the top 10 destinations I should visit?",
+            'food': "What are 10 must-try Korean foods and where can I find the best ones?",
+            'budget': "I'm backpacking through Asia on a budget. What are 10 affordable destinations?",
+            'culture': "I'm interested in Korean culture and history. What are 10 cultural sites I should visit?"
+        };
+
+        messageInput.value = examples[type] || examples['korea'];
+        messageInput.focus();
+    }
+
+    // Enter 키로 스트림 시작 (Ctrl+Enter)
+    messageInput.addEventListener('keydown', (event) => {
+        if (event.ctrlKey && event.key === 'Enter') {
+            event.preventDefault();
+            if (!startBtn.disabled) {
+                startStream();
+            }
+        }
+    });
+
+    // 페이지 언로드 시 연결 정리
+    window.addEventListener('beforeunload', () => {
+        if (eventSource) {
+            eventSource.close();
+        }
+    });
+
+    // 텍스트 영역에 포커스
+    window.addEventListener('load', () => {
+        messageInput.focus();
+    });
+</script>
+</body>
+</html>

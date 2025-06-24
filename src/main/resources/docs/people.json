@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Siva",
+    "dateOfBirth": "1983-06-25",
+    "careerStart": "2006-10-26",
+    "books": [
+      "Beginning Spring Boot 3",
+      "PrimeFaces Beginners Guide",
+      "Java Persistence with MyBatis 3"
+    ]
+  },
+  {
+    "name": "Craig Walls",
+    "dateOfBirth": "1980-05-30",
+    "careerStart": "2000-01-01",
+    "books": [
+      "Spring in Action",
+      "Spring Boot in Action",
+      "XDoclet in Action",
+      "Modular Java: Creating Flexible"
+    ]
+  },
+  {
+    "name": "Erich Gamma",
+    "dateOfBirth": "1961-03-13",
+    "careerStart": "1985-01-01",
+    "books": [
+      "Design Patterns: Elements of Reusable Object-Oriented Software"
+    ]
+  },
+  {
+    "name": "마틴 파울러",
+    "dateOfBirth": "1963-12-18",
+    "careerStart": "1987-01-01",
+    "books": [
+      "리팩터링",
+      "프레젠테이션 모델"
+    ]
+  }
+]

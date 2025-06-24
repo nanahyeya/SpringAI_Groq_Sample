@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Korea Travel Guide</title>
+    <style>
+        #output {
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #startBtn {
+            background-color: #007bff;
+            color: white;
+        }
+        #startBtn:hover {
+            background-color: #0056b3;
+        }
+        #stopBtn {
+            background-color: #dc3545;
+            color: white;
+        }
+        #stopBtn:hover {
+            background-color: #c82333;
+        }
+        #stopBtn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        #clearBtn {
+            background-color: #6c757d;
+            color: white;
+        }
+        #clearBtn:hover {
+            background-color: #545b62;
+        }
+        .status {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .status.connected {
+            color: #28a745;
+        }
+        .status.disconnected {
+            color: #dc3545;
+        }
+        .status.connecting {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+<h1>Korea Travel Recommendations</h1>
+
+<div class="controls">
+    <button id="startBtn" onclick="startStream()">Start Stream</button>
+    <button id="stopBtn" onclick="stopStream()" disabled>Stop Stream</button>
+    <button id="clearBtn" onclick="clearOutput()">Clear</button>
+    <span id="status" class="status disconnected">Disconnected</span>
+</div>
+
+<pre id="output"></pre>
+
+<script>
+    let eventSource = null;
+    let accumulatedText = '';
+    const output = document.getElementById('output');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const status = document.getElementById('status');
+
+    function startStream() {
+        if (eventSource) {
+            eventSource.close();
+        }
+
+        accumulatedText = '';
+        output.textContent = '';
+
+        // 버튼 상태 변경
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        updateStatus('connecting', 'Connecting...');
+
+        eventSource = new EventSource("/api/stream/sse");
+
+        eventSource.onopen = (event) => {
+            updateStatus('connected', 'Connected');
+        };
+
+        eventSource.onmessage = (event) => {
+            accumulatedText += event.data;
+
+            // 숫자 목록 앞에 줄바꿈 추가
+            let formattedText = accumulatedText
+                .replace(/(\d+\.\s*\*\*)/g, '\n\n$1')  // 번호 앞에 줄바꿈
+                .replace(/([.!?])\s+(?=\d+\.)/g, '$1\n\n');  // 문장 끝과 다음 번호 사이 줄바꿈
+
+            output.textContent = formattedText;
+            output.scrollTop = output.scrollHeight;
+        };
+
+        eventSource.onerror = (event) => {
+            console.error('EventSource failed:', event);
+            stopStream();
+        };
+    }
+
+    function stopStream() {
+        if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+        }
+
+        // 버튼 상태 변경
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        updateStatus('disconnected', 'Disconnected');
+    }
+
+    function clearOutput() {
+        accumulatedText = '';
+        output.textContent = '';
+    }
+
+    function updateStatus(className, text) {
+        status.className = `status ${className}`;
+        status.textContent = text;
+    }
+
+    // 페이지 언로드 시 연결 정리
+    window.addEventListener('beforeunload', () => {
+        if (eventSource) {
+            eventSource.close();
+        }
+    });
+
+    // 페이지 로드 시 자동 시작 (선택사항)
+    // window.addEventListener('load', startStream);
+</script>
+</body>
+</html>

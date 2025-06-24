@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Korea Travel Guide</title>
+    <style>
+        #output {
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+<h1>Korea Travel Recommendations</h1>
+<pre id="output"></pre>
+<button onclick="clearOutput()">Clear</button>
+
+<script>
+    let accumulatedText = '';
+    const output = document.getElementById('output');
+
+    const eventSource = new EventSource("/api/stream/sse");
+
+    eventSource.onmessage = (event) => {
+        accumulatedText += event.data;
+
+        // 숫자 목록 앞에 줄바꿈 추가
+        let formattedText = accumulatedText
+            .replace(/(\d+\.\s*\*\*)/g, '\n\n$1')  // 번호 앞에 줄바꿈
+            .replace(/([.!?])\s+(?=\d+\.)/g, '$1\n\n');  // 문장 끝과 다음 번호 사이 줄바꿈
+
+        output.textContent = formattedText;
+        output.scrollTop = output.scrollHeight;
+    };
+
+    function clearOutput() {
+        accumulatedText = '';
+        output.textContent = '';
+    }
+</script>
+</body>
+</html>

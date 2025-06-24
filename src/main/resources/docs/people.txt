@@ -1,0 +1,26 @@
+Siva, born on 25 June 1983, is a software architect working in India.
+He started his career as a Java developer on 26 Oct 2006 and worked with
+other languages like Kotlin, Go, JavaScript, Python too.
+
+He authored "Beginning Spring Boot 3" book with Apress Publishers.
+He has also written "PrimeFaces Beginners Guide" and
+"Java Persistence with MyBatis 3" books with PacktPub.
+
+Craig, born on 30 May 1980, is a software architect working in America.
+Craig Walls is a senior engineer with Pivotal as the Spring Social project lead and is the author of Spring in Action and Spring Boot in Action.
+He's a zealous promoter of the Spring Framework, speaking frequently at local user groups and conferences and writing about Spring.
+
+He authored "Spring in Action" book with Apress Publishers.
+He has also written "XDoclet in Action" and
+"Modular Java:Creating Flexible" books with PacktPub.
+
+
+Erich Gamma is a Swiss computer scientist and one of the four co-authors (referred to as "Gang of Four") of the software engineering textbook, Design Patterns: Elements of Reusable Object-Oriented Software.
+
+Gamma, along with Kent Beck, co-wrote the JUnit software testing framework which helped create Test-Driven Development and influenced the whole software industry[according to whom?]. He was the development team lead of the Eclipse platform's Java Development Tools (JDT), and worked on the IBM Rational Jazz project.
+
+In 2011 he joined the Microsoft Visual Studio team and leads a development lab in Zürich, Switzerland that has developed the "Monaco" suite of components for browser-based development, found in products such as Azure DevOps Services (formerly Visual Studio Team Services and Visual Studio Online), Visual Studio Code, Azure Mobile Services, Azure Web Sites, and the Office 365 Development tools.[3]
+
+마틴 파울러(Martin Fowler, 1963년 12월 18일 ~ )는 미국의 소프트웨어 개발자, 소프트웨어 개발 부문의 저자이자 국제적 연설가로서 객체 지향 분석 및 설계, UML, 패턴, 애자일 소프트웨어 개발 방법론(익스트림 프로그래밍 포함)을 전문으로 하고 있다.
+
+1999년 책 리팩터링(Refactoring)은 코드 리팩터링을 널리 보급하였다.[1] 2004년, 아키텍처 패턴의 하나인 프레젠테이션 모델(Presentation Model, PM)을 선보였다.[2]
