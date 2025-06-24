@@ -48,7 +48,7 @@ public class RagConfiguration {
         } else {
             log.info("===> Vector Store File Does Not Exist, loading documents");
             TextReader textReader = new TextReader(models);
-            textReader.getCustomMetadata().put("filename", "models.txt");
+            textReader.getCustomMetadata().put("filename", "models.json");
             List<Document> documents = textReader.get();
             log.info("===> 스플릿팅 전 Document 갯수 = {} ", documents.size());
 
