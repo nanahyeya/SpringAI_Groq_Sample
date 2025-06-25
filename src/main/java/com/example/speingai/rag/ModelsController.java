@@ -2,12 +2,16 @@ package com.example.speingai.rag;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class ModelsController {
@@ -15,9 +19,22 @@ public class ModelsController {
     private final ChatClient chatClient;
 
     public ModelsController(ChatClient.Builder builder, VectorStore vectorStore) {
-        this.chatClient = builder
-                .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore))
+
+//        this.chatClient = builder
+//                .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore))
+//                .build();
+
+        SearchRequest searchRequest = new SearchRequest.Builder()
+                .topK(5)
+                .similarityThreshold(0.7)
+                //.filterExpression("company == 'OpenAI'")
                 .build();
+
+        QuestionAnswerAdvisor advisor = QuestionAnswerAdvisor.builder(vectorStore)
+                .searchRequest(searchRequest)
+                .build();
+
+        this.chatClient = builder.defaultAdvisors(advisor).build();
     }
 
     @GetMapping("/api/rag/models")
@@ -59,12 +76,14 @@ public class ModelsController {
     @GetMapping("/api/rag/models/raw")
     public String getRawResponse(@RequestParam(
             value = "message",
-            defaultValue = "Give me a list of all the models from OpenAI along with their context window.") String message) {
+            defaultValue = "List OpenAI models") String message) {
 
         return chatClient.prompt()
                 .user(message)
                 .call()
                 .content();
     }
+
+
 
 }

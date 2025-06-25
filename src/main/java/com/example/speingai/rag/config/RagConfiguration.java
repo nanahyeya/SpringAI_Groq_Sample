@@ -1,5 +1,7 @@
 package com.example.speingai.rag.config;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
@@ -22,6 +24,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -63,10 +66,56 @@ public class RagConfiguration {
         return simpleVectorStore;
     }
 
+//    @Bean
+//    SimpleVectorStore simpleVectorStore(EmbeddingModel embeddingModel) throws IOException {
+//        System.out.println("EmbeddingModel 클래스 = " + embeddingModel.getClass().getName());
+//
+//        var simpleVectorStore = SimpleVectorStore.builder(embeddingModel).build();
+//        var vectorStoreFile = getVectorStoreFile();
+//
+//        if (vectorStoreFile.exists()) {
+//            log.info("Loading existing vector store");
+//            simpleVectorStore.load(vectorStoreFile);
+//        } else {
+//            log.info("Creating new vector store");
+//            List<Document> documents = createDocumentsFromJson();
+//            simpleVectorStore.add(documents);
+//            simpleVectorStore.save(vectorStoreFile);
+//        }
+//        return simpleVectorStore;
+//    }
+
+
     private File getVectorStoreFile() {
         Path path = Paths.get("src", "main", "resources", "data");
         String absolutePath = path.toFile().getAbsolutePath() + "/" + vectorStoreName;
         return new File(absolutePath);
     }
+
+//    private List<Document> createDocumentsFromJson() throws IOException {
+//        List<Document> documents = new ArrayList<>();
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        List<Map<String, Object>> modelList = objectMapper.readValue(
+//                models.getInputStream(),
+//                new TypeReference<List<Map<String, Object>>>() {}
+//        );
+//
+//        for (Map<String, Object> modelData : modelList) {
+//            String company = (String) modelData.get("company");
+//            String model = (String) modelData.get("model");
+//            Integer contextWindowSize = (Integer) modelData.get("context_window_size");
+//
+//            String content = String.format(
+//                    "Company: %s, Model: %s, Context Window: %d tokens",
+//                    company, model, contextWindowSize
+//            );
+//
+//            documents.add(new Document(content));
+//        }
+//
+//        return documents;
+//    }
+
 
 }
